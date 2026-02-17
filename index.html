@@ -65,6 +65,7 @@
             height: 600px;
             position: relative;
             overflow: hidden;
+            touch-action: none;
         }
 
         .grid {
@@ -148,6 +149,31 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+        }
+
+        .touch-controls {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .touch-btn {
+            padding: 12px 8px;
+            background-color: #2a2a4e;
+            color: #fff;
+            border: 1px solid var(--color-accent);
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .touch-btn:active {
+            background-color: var(--color-accent);
+            color: #000;
         }
 
         .btn {
@@ -283,6 +309,12 @@
                 gap: 15px;
             }
         }
+
+        @media (hover: none), (pointer: coarse) {
+            .touch-controls {
+                display: grid;
+            }
+        }
     </style>
 </head>
 <body>
@@ -343,6 +375,16 @@
                 <div><span class="key">↓</span> Scendi</div>
                 <div><span class="key">SPAZIO</span> Caduta rapida</div>
                 <div><span class="key">P</span> Pausa</div>
+                <div><span class="key">Touch:</span> Tap ruota, swipe sposta</div>
+            </div>
+
+            <div class="touch-controls" aria-label="Controlli touch">
+                <button class="touch-btn" data-action="left" aria-label="Sposta a sinistra">◀</button>
+                <button class="touch-btn" data-action="rotate" aria-label="Ruota">⟳</button>
+                <button class="touch-btn" data-action="right" aria-label="Sposta a destra">▶</button>
+                <button class="touch-btn" data-action="hardDrop" aria-label="Caduta rapida">⤓</button>
+                <button class="touch-btn" data-action="down" aria-label="Scendi">▼</button>
+                <button class="touch-btn" data-action="pause" aria-label="Pausa">⏯</button>
             </div>
         </div>
     </div>
@@ -364,6 +406,9 @@
         let level = 1;
         let gameSpeed = 1;
         let fallInterval = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchMoved = false;
 
         // Definizione dei pezzi (Tetrominoes)
         const PIECES = {
@@ -616,6 +661,94 @@
                     break;
             }
         });
+
+        function canControlPiece() {
+            return gameRunning && !gamePaused && !gameOver && currentPiece;
+        }
+
+        function handleAction(action) {
+            if (action === 'pause') {
+                togglePause();
+                return;
+            }
+
+            if (!canControlPiece()) return;
+
+            switch(action) {
+                case 'left':
+                    currentPiece.moveLeft();
+                    break;
+                case 'right':
+                    currentPiece.moveRight();
+                    break;
+                case 'down':
+                    currentPiece.moveDown();
+                    score += gameSpeed;
+                    break;
+                case 'rotate':
+                    currentPiece.rotate();
+                    break;
+                case 'hardDrop':
+                    hardDrop();
+                    break;
+            }
+
+            render();
+        }
+
+        document.querySelectorAll('.touch-btn').forEach((button) => {
+            button.addEventListener('click', () => handleAction(button.dataset.action));
+        });
+
+        const gameBoard = document.querySelector('.board');
+
+        gameBoard.addEventListener('touchstart', (e) => {
+            if (!e.changedTouches.length) return;
+            const touch = e.changedTouches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            touchMoved = false;
+        }, { passive: true });
+
+        gameBoard.addEventListener('touchmove', (e) => {
+            if (!e.changedTouches.length) return;
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+
+            if (Math.abs(deltaX) > 24) {
+                const moves = Math.floor(Math.abs(deltaX) / 24);
+                for (let i = 0; i < moves; i++) {
+                    handleAction(deltaX > 0 ? 'right' : 'left');
+                }
+                touchStartX = touch.clientX;
+                touchMoved = true;
+            }
+
+            if (deltaY > 32) {
+                handleAction('down');
+                touchStartY = touch.clientY;
+                touchMoved = true;
+            }
+        }, { passive: false });
+
+        gameBoard.addEventListener('touchend', (e) => {
+            if (!e.changedTouches.length) return;
+
+            const touch = e.changedTouches[0];
+            const deltaX = touch.clientX - touchStartX;
+            const deltaY = touch.clientY - touchStartY;
+
+            if (!touchMoved && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
+                handleAction('rotate');
+                return;
+            }
+
+            if (deltaY > 80 && Math.abs(deltaX) < 30) {
+                handleAction('hardDrop');
+            }
+        }, { passive: true });
 
         // Inizio del gioco
         function startGame() {
