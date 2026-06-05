@@ -777,7 +777,7 @@
         function startFallLoop() {
             if (fallInterval) clearInterval(fallInterval);
 
-            const speed = Math.max(100 - (gameSpeed - 1) * 15, 50);
+            const speed = Math.max(250 - (gameSpeed - 1) * 15, 50);
             fallInterval = setInterval(() => {
                 if (!gamePaused && gameRunning && !gameOver) {
                     if (currentPiece && !currentPiece.moveDown()) {
