@@ -440,8 +440,8 @@
 
                 for (let i = 0; i < cols; i++) {
                     const newRow = [];
-                    for (let j = rows - 1; j >= 0; j--) {
-                        newRow.push(this.shape[j][i]);
+                    for (let j = 0; j < rows; j++) {
+                        newRow.push(this.shape[j][cols - 1 - i]);
                     }
                     rotated.push(newRow);
                 }
@@ -777,7 +777,7 @@
         function startFallLoop() {
             if (fallInterval) clearInterval(fallInterval);
 
-            const speed = Math.max(250 - (gameSpeed - 1) * 15, 50);
+            const speed = Math.max(600 - (gameSpeed - 1) * 15, 50);
             fallInterval = setInterval(() => {
                 if (!gamePaused && gameRunning && !gameOver) {
                     if (currentPiece && !currentPiece.moveDown()) {
