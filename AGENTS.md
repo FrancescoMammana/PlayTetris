@@ -36,3 +36,5 @@ GitHub Pages deploy on push to `main`. No test suite, no linting, no typecheckin
 - UI labels and README are in **Italian**.
 - Block colors: CSS classes `.color-i`, `.color-o`, `.color-t`, `.color-s`, `.color-z`, `.color-j`, `.color-l`.
 - Speed levels 1–6, buttons with `.speed-btn.active` class.
+- **Minimal changes**: Every change must have the smallest possible footprint on the existing codebase. No refactoring of working code unless explicitly requested. Do not introduce unnecessary dependencies or rewrites.
+- **Italian dialogue**: All interaction with the user must be in Italian.
