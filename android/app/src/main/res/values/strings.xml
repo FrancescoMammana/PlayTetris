@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tetris</string>
+    <string name="title">TETRIS</string>
+    <string name="score_title">PUNTEGGIO</string>
+    <string name="lines_title">LINEE</string>
+    <string name="level_title">LIVELLO</string>
+    <string name="next_piece_title">PROSSIMO PEZZO</string>
+    <string name="speed_title">VELOCITÀ</string>
+    <string name="play">INIZIA</string>
+    <string name="pause">PAUSA</string>
+    <string name="resume">RIPRENDI</string>
+    <string name="game_over">GAME OVER!</string>
+    <string name="final_score">Punteggio: %1$d</string>
+    <string name="final_lines">Linee: %1$d</string>
+    <string name="action_left">Sposta a sinistra</string>
+    <string name="action_rotate">Ruota</string>
+    <string name="action_right">Sposta a destra</string>
+    <string name="action_hard_drop">Caduta rapida</string>
+    <string name="action_down">Scendi</string>
+    <string name="action_pause">Pausa</string>
+</resources>
